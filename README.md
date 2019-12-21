@@ -45,7 +45,7 @@ python -m visdom.server
 #### terminal 2
 You can choose backbone network  
 
-##### supporting backbone network
+##### backbone network supported
 1. mobilenet_v2
 2. vgg11_bn
 ```bash
