@@ -6,13 +6,16 @@ pip install -r requirements.txt
 ```
 
 ## Preparing dataset
-0. Make csv fie by following form  
+1. Make csv fie by following form  
+
 | image_file_name | color | style | part | season | category |  
-|----------------|-------|--------|--------|--------|------|
+|:---:|:---:|:---:|:---:|:---:|:---:|  
 | jean_0001.jpg	 | blue  | casual | bottom | winter | jean |  
 | jean_0002.jpg	 | white | casual | bottom | winter | jean |  
-...
-0. Make directory like this and add file  
+| ...	 | ... | ... | ... | ... | ... |  
+| vest_0049.jpg	 | beige | dandy | top | spring/fall | vest |  
+
+2. Make directory like this and add file  
 ```
 dataset/
     images/
@@ -23,7 +26,7 @@ dataset/
     labels/
         labels.csv
 ```
-0. Run split_csv.py to make label for each classification category
+3. Run split_csv.py to make label for each classification category
 ```bash
 python split_scv.py
 ```
@@ -41,8 +44,8 @@ python -m visdom.server
 You can choose backbone network  
 
 ##### supporting backbone network
-0. mobilenet_v2
-0. vgg11_bn
+1. mobilenet_v2
+2. vgg11_bn
 ```bash
 python main.py --backbone mobilenet_v2
 ```
