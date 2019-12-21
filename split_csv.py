@@ -1,71 +1,65 @@
 import os
 
-label_dir = os.path.join('dataset', 'labels')
 
-color_file_name = 'color.csv'
-style_file_name = 'style.csv'
-part_file_name = 'part.csv'
-season_file_name = 'season.csv'
-category_file_name = 'category.csv'
+def main():
+    label_dir = os.path.join('dataset', 'labels')
+    ios_label_dir = os.path.join('dataset', 'ios_labels')
+    input_file_name = os.path.join(label_dir, 'labels.csv')
 
-input_file_name = os.path.join(label_dir, 'labels.csv')
+    def save_csv(category, set):
+        file = open(os.path.join(label_dir, f'{category}.csv'), 'w')
+        ios_file = open(os.path.join(ios_label_dir, f'{category}.csv'), 'w')
 
-if not os.path.exists(label_dir):
-    os.makedirs(label_dir)
+        string = ''
+        for item in set:
+            ios_file.write(f'{item}\n')
+            string += f'{item},'
+        file.write(string[:-1])
 
-input_file = open(input_file_name, 'r')
-color_file = open(os.path.join(label_dir, color_file_name), 'w')
-style_file = open(os.path.join(label_dir, style_file_name), 'w')
-part_file = open(os.path.join(label_dir, part_file_name), 'w')
-season_file = open(os.path.join(label_dir, season_file_name), 'w')
-category_file = open(os.path.join(label_dir, category_file_name), 'w')
+        file.close()
+        ios_file.close()
 
-color_set = set()
-style_set = set()
-part_set = set()
-season_set = set()
-category_set = set()
 
-while True:
-    line = input_file.readline()
-    if not line:
-        break
+    if not os.path.exists(label_dir):
+        os.makedirs(label_dir)
+    if not os.path.exists(ios_label_dir):
+        os.makedirs(ios_label_dir)
 
-    image_name, color, style, part, season, category = line.split(',')
-    category = category[:-1]
+    input_file = open(input_file_name, 'r')
 
-    color_set.add(color)
-    style_set.add(style)
-    part_set.add(part)
-    season_set.add(season)
-    category_set.add(category)
+    color_set = set()
+    style_set = set()
+    part_set = set()
+    season_set = set()
+    category_set = set()
 
-string = ''
-for color in color_set:
-    string += f'{color},'
-color_file.write(string[:-1])
-print('color', len(string.split(',')))
+    while True:
+        line = input_file.readline()
+        if not line:
+            break
 
-string = ''
-for style in style_set:
-    string += f'{style},'
-style_file.write(string[:-1])
-print('style', len(string.split(',')))
+        image_name, color, style, part, season, category = line.split(',')
+        category = category[:-1]
 
-string = ''
-for part in part_set:
-    string += f'{part},'
-part_file.write(string[:-1])
-print('part', len(string.split(',')))
+        color_set.add(color)
+        style_set.add(style)
+        part_set.add(part)
+        season_set.add(season)
+        category_set.add(category)
 
-string = ''
-for season in season_set:
-    string += f'{season},'
-season_file.write(string[:-1])
-print('season', len(string.split(',')))
+    input_file.close()
 
-string = ''
-for category in category_set:
-    string += f'{category},'
-category_file.write(string[:-1])
-print('category', len(string.split(',')))
+    save_csv('color', color_set)
+    save_csv('style', style_set)
+    save_csv('part', part_set)
+    save_csv('season', season_set)
+    save_csv('category', category_set)
+
+    file = open(os.path.join('dataset', 'label_data.txt'), 'w')
+    file.write(f'color,style,part,season,category\n')
+    file.write(f'{len(color_set)},{len(style_set)},{len(part_set)},{len(season_set)},{len(category_set)}')
+    file.close()
+
+
+if __name__ == '__main__':
+    main()

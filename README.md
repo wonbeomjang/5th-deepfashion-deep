@@ -27,6 +27,8 @@ dataset/
 python split_scv.py
 ```
 
+You can get label in dataset/labels and dataset/ios_labels
+
 ## Train model
 You need two terminal
 

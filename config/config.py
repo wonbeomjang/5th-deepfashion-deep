@@ -13,11 +13,6 @@ parser.add_argument('--dataset', default='dataset', help="")
 parser.add_argument('--backbone', default='mobilenet_v2', help="backbone network")
 parser.add_argument('--decay_epoch', type=int, default=50, help="decay step")
 
-parser.add_argument('--num_color', type=int,  default=19, help="the number of color")
-parser.add_argument('--num_style', type=int,  default=14, help="the number of style")
-parser.add_argument('--num_part', type=int,  default=6, help="the number of season")
-parser.add_argument('--num_season', type=int,  default=6, help="the number of season")
-parser.add_argument('--num_category', type=int,  default=40, help="the number of category")
 
 def get_config():
     return parser.parse_args()

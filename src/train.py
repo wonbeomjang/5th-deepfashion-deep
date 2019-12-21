@@ -17,14 +17,18 @@ class Trainer:
         self.epoch = 0
         self.num_epoch = config.num_epoch
         self.backbone = config.backbone
-
-        self.num_color = config.num_color
-        self.num_style = config.num_style
-        self.num_part = config.num_part
-        self.num_season = config.num_season
-        self.num_category = config.num_category
-
+        self.dataset = config.dataset
         self.decay_epoch = config.decay_epoch
+
+        label_data_file = open(os.path.join(self.dataset, 'label_data.txt'))
+        self.num_color, self.num_style, self.num_part, self.num_season, self.num_category = label_data_file.readlines()[1].split(',')
+        self.num_color = int(self.num_color)
+        self.num_style = int(self.num_style)
+        self.num_part = int(self.num_part)
+        self.num_season = int(self.num_season)
+        self.num_category = int(self.num_category)
+        label_data_file.close()
+
 
         self.build_model()
 
