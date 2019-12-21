@@ -8,7 +8,8 @@ pip install -r requirements.txt
 ## Preparing dataset
 0. Make csv fie by following form  
 | image_file_name | color | style | part | season | category |  
-| jean_0001.jpg	 | blue | casual | bottom | winter | jean |  
+|----------------|-------|--------|--------|--------|------|
+| jean_0001.jpg	 | blue  | casual | bottom | winter | jean |  
 | jean_0002.jpg	 | white | casual | bottom | winter | jean |  
 ...
 0. Make directory like this and add file  
