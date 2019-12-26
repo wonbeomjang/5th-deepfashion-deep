@@ -29,7 +29,6 @@ class Trainer:
         self.num_category = int(self.num_category)
         label_data_file.close()
 
-
         self.build_model()
 
     def train(self):
@@ -77,8 +76,9 @@ class Trainer:
             for step, (images, color, style, part, season, category) in enumerate(self.train_loader):
                 images = images.to(self.device)
                 color = color.to(self.device)
-                season = season.to(self.device)
                 style = style.to(self.device)
+                part = part.to(self.device)
+                season = season.to(self.device)
                 category = category.to(self.device)
 
                 outputs = self.color_net(images)
@@ -131,12 +131,12 @@ class Trainer:
                 if outputs.argmax(dim=1) == category:
                     correct_category += 1
 
-                if step % 10 == 0:
+                if step % 100 == 1:
                     print(f'Epoch [{epoch}/{self.num_epoch}], Step: [{step}/{total_step}], Color Loss: {color_avg.avg:.4f}, '
                           f'Season Loss: {season_avg.avg:.4f}, Part Loss: {part_avg.avg:.4f}, Style Loss: {style_avg.avg:.4f}, '
                           f'Category Loss: {category_avg.avg:.4f}')
-                    print(f'Color: {correct_color/step:.4f}%, Style: {correct_style/step:.4f}%, Part: {correct_part:.4f}%, '
-                          f'Season Category: {correct_season/step:.4f}')
+                    print(f'Color: {correct_color/step*100:.4f}%, Style: {correct_style/step*100:.4f}%, '
+                          f'Part: {correct_part/step*100:.4f}%, Season Category: {correct_season/step*100:.4f}')
 
             torch.save(self.color_net.state_dict(), f'{self.checkpoint_dir}/color_checkpoint-{epoch}.pth')
             torch.save(self.season_net.state_dict(), f'{self.checkpoint_dir}/season_checkpoint-{epoch}.pth')
