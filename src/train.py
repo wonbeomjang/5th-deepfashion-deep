@@ -19,6 +19,7 @@ class Trainer:
         self.backbone = config.backbone
         self.dataset = config.dataset
         self.decay_epoch = config.decay_epoch
+        self.batch_size = config.batch_size
 
         label_data_file = open(os.path.join(self.dataset, 'label_data.txt'))
         self.num_color, self.num_style, self.num_part, self.num_season, self.num_category = label_data_file.readlines()[1].split(',')
@@ -88,8 +89,7 @@ class Trainer:
                 color_optimizer.step()
                 color_avg.update(loss.item())
 
-                if outputs.argmax(dim=1) == color:
-                    correct_color += 1
+                correct_color += outputs.argmax(dim=1).eq(color).sum().item()
 
                 outputs = self.style_net(images)
                 loss = criterion(outputs, style)
@@ -98,8 +98,7 @@ class Trainer:
                 style_optimizer.step()
                 style_avg.update(loss.item())
 
-                if outputs.argmax(dim=1) == style:
-                    correct_style += 1
+                correct_style += outputs.argmax(dim=1).eq(style).sum().item()
 
                 outputs = self.part_net(images)
                 loss = criterion(outputs, part)
@@ -108,8 +107,7 @@ class Trainer:
                 part_optimizer.step()
                 part_avg.update(loss.item())
 
-                if outputs.argmax(dim=1) == part:
-                    correct_part += 1
+                correct_part += outputs.argmax(dim=1).eq(part).sum().item()
 
                 outputs = self.season_net(images)
                 loss = criterion(outputs, season)
@@ -118,8 +116,7 @@ class Trainer:
                 season_optimizer.step()
                 season_avg.update(loss.item())
 
-                if outputs.argmax(dim=1) == season:
-                    correct_season += 1
+                correct_season += outputs.argmax(dim=1).eq(season).sum().item()
 
                 outputs = self.category_net(images)
                 loss = criterion(outputs, category)
@@ -128,15 +125,14 @@ class Trainer:
                 category_optimizer.step()
                 category_avg.update(loss.item())
 
-                if outputs.argmax(dim=1) == category:
-                    correct_category += 1
+                correct_category += outputs.argmax(dim=1).eq(category).sum().item()
 
                 if step % 100 == 1:
                     print(f'Epoch [{epoch}/{self.num_epoch}], Step: [{step}/{total_step}], Color Loss: {color_avg.avg:.4f}, '
                           f'Season Loss: {season_avg.avg:.4f}, Part Loss: {part_avg.avg:.4f}, Style Loss: {style_avg.avg:.4f}, '
                           f'Category Loss: {category_avg.avg:.4f}')
-                    print(f'Color: {correct_color/step*100:.4f}%, Style: {correct_style/step*100:.4f}%, '
-                          f'Part: {correct_part/step*100:.4f}%, Season Category: {correct_season/step*100:.4f}')
+                    print(f'Color: {correct_color/(step*self.batch_size)*100:.4f}%, Style: {correct_style/(step*self.batch_size)*100:.4f}%, '
+                          f'Part: {correct_part/(step*self.batch_size)*100:.4f}%, Season Category: {correct_season/(step*self.batch_size)*100:.4f}')
 
             torch.save(self.color_net.state_dict(), f'{self.checkpoint_dir}/color_checkpoint-{epoch}.pth')
             torch.save(self.season_net.state_dict(), f'{self.checkpoint_dir}/season_checkpoint-{epoch}.pth')
