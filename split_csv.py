@@ -19,7 +19,6 @@ def main():
         file.close()
         ios_file.close()
 
-
     if not os.path.exists(label_dir):
         os.makedirs(label_dir)
     if not os.path.exists(ios_label_dir):

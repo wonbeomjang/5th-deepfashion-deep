@@ -60,18 +60,18 @@ class Trainer:
         style_plot = create_vis_plot('Epoch', 'Loss', 'Style')
         category_plot = create_vis_plot('Epoch', 'Loss', 'Category')
 
-        correct_color = 0
-        correct_style = 0
-        correct_part = 0
-        correct_season = 0
-        correct_category = 0
-
         for epoch in range(self.epoch, self.num_epoch):
             color_avg.reset()
             season_avg.reset()
             part_avg.reset()
             style_avg.reset()
             category_avg.reset()
+
+            correct_color = 0
+            correct_style = 0
+            correct_part = 0
+            correct_season = 0
+            correct_category = 0
 
             for step, (images, color, style, part, season, category) in enumerate(self.train_loader):
                 images = images.to(self.device)
@@ -183,7 +183,7 @@ class Trainer:
 
         epoch = []
         for s in model_parameter:
-            epoch += [s.split('-')[-1]]
+            epoch += [int(s.split('-')[-1].split('.')[0])]
 
         epoch.sort()
 
