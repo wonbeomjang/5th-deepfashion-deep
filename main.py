@@ -2,6 +2,7 @@ import os
 from dataloader.dataloader import get_loader
 from config.config import get_config
 from src.train import Trainer
+from src.test import Tester
 
 
 def main(config):
@@ -14,6 +15,10 @@ def main(config):
     print('[*] Train')
     trainer = Trainer(config, train_loader)
     trainer.train()
+
+    print('[*] Test')
+    tester = Tester(config, test_loader)
+    tester.test()
 
 
 if __name__ == "__main__":
