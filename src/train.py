@@ -61,6 +61,12 @@ class Trainer:
         style_plot = create_vis_plot('Epoch', 'Loss', 'Style')
         category_plot = create_vis_plot('Epoch', 'Loss', 'Category')
 
+        correct_color = 0
+        correct_style = 0
+        correct_part = 0
+        correct_season = 0
+        correct_category = 0
+
         for epoch in range(self.epoch, self.num_epoch):
             color_avg.reset()
             season_avg.reset()
@@ -82,12 +88,18 @@ class Trainer:
                 color_optimizer.step()
                 color_avg.update(loss.item())
 
+                if outputs.argmax(dim=1) == color:
+                    correct_color += 1
+
                 outputs = self.style_net(images)
                 loss = criterion(outputs, style)
                 style_optimizer.zero_grad()
                 loss.backward()
                 style_optimizer.step()
                 style_avg.update(loss.item())
+
+                if outputs.argmax(dim=1) == style:
+                    correct_style += 1
 
                 outputs = self.part_net(images)
                 loss = criterion(outputs, part)
@@ -96,12 +108,18 @@ class Trainer:
                 part_optimizer.step()
                 part_avg.update(loss.item())
 
+                if outputs.argmax(dim=1) == part:
+                    correct_part += 1
+
                 outputs = self.season_net(images)
                 loss = criterion(outputs, season)
                 season_optimizer.zero_grad()
                 loss.backward()
                 season_optimizer.step()
                 season_avg.update(loss.item())
+
+                if outputs.argmax(dim=1) == season:
+                    correct_season += 1
 
                 outputs = self.category_net(images)
                 loss = criterion(outputs, category)
@@ -110,10 +128,15 @@ class Trainer:
                 category_optimizer.step()
                 category_avg.update(loss.item())
 
+                if outputs.argmax(dim=1) == category:
+                    correct_category += 1
+
                 if step % 10 == 0:
                     print(f'Epoch [{epoch}/{self.num_epoch}], Step: [{step}/{total_step}], Color Loss: {color_avg.avg:.4f}, '
                           f'Season Loss: {season_avg.avg:.4f}, Part Loss: {part_avg.avg:.4f}, Style Loss: {style_avg.avg:.4f}, '
                           f'Category Loss: {category_avg.avg:.4f}')
+                    print(f'Color: {correct_color/step:.4f}%, Style: {correct_style/step:.4f}%, Part: {correct_part:.4f}%, '
+                          f'Season Category: {correct_season/step:.4f}')
 
             torch.save(self.color_net.state_dict(), f'{self.checkpoint_dir}/color_checkpoint-{epoch}.pth')
             torch.save(self.season_net.state_dict(), f'{self.checkpoint_dir}/season_checkpoint-{epoch}.pth')
@@ -135,11 +158,11 @@ class Trainer:
 
 
     def build_model(self):
-        self.color_net: nn.Module = Model(self.backbone, self.num_color)
-        self.style_net: nn.Module = Model(self.backbone, self.num_style)
-        self.part_net: nn.Module = Model(self.backbone, self.num_part)
-        self.season_net: nn.Module = Model(self.backbone, self.num_season)
-        self.category_net: nn.Module = Model(self.backbone, self.num_category)
+        self.color_net: nn.Module = Model(self.backbone, self.num_color).to(self.device)
+        self.style_net: nn.Module = Model(self.backbone, self.num_style).to(self.device)
+        self.part_net: nn.Module = Model(self.backbone, self.num_part).to(self.device)
+        self.season_net: nn.Module = Model(self.backbone, self.num_season).to(self.device)
+        self.category_net: nn.Module = Model(self.backbone, self.num_category).to(self.device)
 
         self.color_net.to(self.device)
         self.style_net.to(self.device)
