@@ -127,12 +127,12 @@ class Trainer:
 
                 correct_category += outputs.argmax(dim=1).eq(category).sum().item()
 
-                if step % 100 == 1:
+                if step % 10 == 1:
                     print(f'Epoch [{epoch}/{self.num_epoch}], Step: [{step}/{total_step}], Color Loss: {color_avg.avg:.4f}, '
                           f'Season Loss: {season_avg.avg:.4f}, Part Loss: {part_avg.avg:.4f}, Style Loss: {style_avg.avg:.4f}, '
                           f'Category Loss: {category_avg.avg:.4f}')
-                    print(f'Color: {correct_color/(step*self.batch_size)*100:.4f}%, Style: {correct_style/(step*self.batch_size)*100:.4f}%, '
-                          f'Part: {correct_part/(step*self.batch_size)*100:.4f}%, Season Category: {correct_season/(step*self.batch_size)*100:.4f}')
+                    print(f'Color: {correct_color/((step+1)*self.batch_size)*100:.4f}%, Style: {correct_style/((step+1)*self.batch_size)*100:.4f}%, '
+                          f'Part: {correct_part/((step+1)*self.batch_size)*100:.4f}%, Season Category: {correct_season/((step+1)*self.batch_size)*100:.4f}%')
 
             torch.save(self.color_net.state_dict(), f'{self.checkpoint_dir}/color_checkpoint-{epoch}.pth')
             torch.save(self.season_net.state_dict(), f'{self.checkpoint_dir}/season_checkpoint-{epoch}.pth')
@@ -160,11 +160,11 @@ class Trainer:
         self.season_net: nn.Module = Model(self.backbone, self.num_season).to(self.device)
         self.category_net: nn.Module = Model(self.backbone, self.num_category).to(self.device)
 
-        self.color_net.to(self.device)
-        self.style_net.to(self.device)
-        self.part_net.to(self.device)
-        self.season_net.to(self.device)
-        self.category_net.to(self.device)
+        self.color_net.train()
+        self.style_net.train()
+        self.part_net.train()
+        self.season_net.train()
+        self.category_net.train()
 
         self.load_model()
 

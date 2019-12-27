@@ -58,9 +58,12 @@ class Tester:
             outputs = self.category_net(images)
             correct_category += outputs.argmax(dim=1).eq(category).sum().item()
 
-            if step % 100 == 1:
-                print(f'Color: {correct_color / (step * self.batch_size) * 100:.4f}%, Style: {correct_style / (step * self.batch_size) * 100:.4f}%, '
-                      f'Part: {correct_part / (step * self.batch_size) * 100:.4f}%, Season Category: {correct_season / (step * self.batch_size) * 100:.4f}')
+            if step % 10 == 1:
+                print(f'Color: {correct_color / ((step + 1) * 1) * 100:.4f}%, Style: {correct_style / ((step + 1) * 1) * 100:.4f}%, '
+                      f'Part: {correct_part / ((step + 1) * 1) * 100:.4f}%, Season Category: {correct_season / ((step + 1) * 1) * 100:.4f}%')
+
+        print(f'Color: {correct_color / ((step + 1) * 1) * 100:.4f}%, Style: {correct_style / ((step + 1) * 1) * 100:.4f}%, '
+              f'Part: {correct_part / ((step + 1) * 1) * 100:.4f}%, Season Category: {correct_season / ((step + 1) * 1) * 100:.4f}%')
 
     def build_model(self):
             self.color_net: nn.Module = Model(self.backbone, self.num_color).to(self.device)
@@ -69,11 +72,11 @@ class Tester:
             self.season_net: nn.Module = Model(self.backbone, self.num_season).to(self.device)
             self.category_net: nn.Module = Model(self.backbone, self.num_category).to(self.device)
 
-            self.color_net.to(self.device)
-            self.style_net.to(self.device)
-            self.part_net.to(self.device)
-            self.season_net.to(self.device)
-            self.category_net.to(self.device)
+            self.color_net.eval()
+            self.style_net.eval()
+            self.part_net.eval()
+            self.season_net.eval()
+            self.category_net.eval()
 
             self.load_model()
 
