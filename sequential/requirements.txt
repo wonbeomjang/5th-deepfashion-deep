@@ -1,0 +1,6 @@
+Pillow
+requests
+torch
+torchvision
+urllib3
+visdom
