@@ -69,7 +69,7 @@ def get_loader(data_dir, image_size, batch_size):
                                                batch_size=batch_size,
                                                shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
-                                              batch_size=1,
+                                              batch_size=batch_size,
                                               shuffle=False)
 
     return train_loader, test_loader

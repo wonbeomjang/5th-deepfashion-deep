@@ -29,41 +29,60 @@ class Tester:
         self.build_model()
 
     def test(self):
-        correct_color = 0
-        correct_style = 0
-        correct_part = 0
-        correct_season = 0
-        correct_category = 0
 
-        for step, (images, color, style, part, season, category) in enumerate(self.test_loader):
-            images = images.to(self.device)
-            color = color.to(self.device)
-            style = style.to(self.device)
-            part = part.to(self.device)
-            season = season.to(self.device)
-            category = category.to(self.device)
+        color_plot = create_vis_plot('Epoch', 'Accuracy', 'Color')
+        season_plot = create_vis_plot('Epoch', 'Accuracy', 'Season')
+        part_plot = create_vis_plot('Epoch', 'Accuracy', 'Part')
+        style_plot = create_vis_plot('Epoch', 'Accuracy', 'Style')
+        category_plot = create_vis_plot('Epoch', 'Accuracy', 'Category')
 
-            outputs = self.color_net(images)
-            correct_color += outputs.argmax(dim=1).eq(color).sum().item()
+        with torch.no_grad():
+            for epoch in range(self.epoch + 1):
 
-            outputs = self.style_net(images)
-            correct_style += outputs.argmax(dim=1).eq(style).sum().item()
+                correct_color = 0
+                correct_style = 0
+                correct_part = 0
+                correct_season = 0
+                correct_category = 0
 
-            outputs = self.part_net(images)
-            correct_part += outputs.argmax(dim=1).eq(part).sum().item()
+                self.color_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"color_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.season_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"season_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.part_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"part_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.style_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"style_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.category_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"category_checkpoint-{epoch}.pth"), map_location=self.device))
 
-            outputs = self.season_net(images)
-            correct_season += outputs.argmax(dim=1).eq(season).sum().item()
+                for step, (images, color, style, part, season, category) in enumerate(self.test_loader):
+                    images = images.to(self.device)
+                    color = color.to(self.device)
+                    style = style.to(self.device)
+                    part = part.to(self.device)
+                    season = season.to(self.device)
+                    category = category.to(self.device)
 
-            outputs = self.category_net(images)
-            correct_category += outputs.argmax(dim=1).eq(category).sum().item()
+                    outputs = self.color_net(images)
+                    correct_color += outputs.argmax(dim=1).eq(color).sum().item()
 
-            if step % 10 == 1:
-                print(f'Color: {correct_color / ((step + 1) * 1) * 100:.4f}%, Style: {correct_style / ((step + 1) * 1) * 100:.4f}%, '
-                      f'Part: {correct_part / ((step + 1) * 1) * 100:.4f}%, Season Category: {correct_season / ((step + 1) * 1) * 100:.4f}%')
+                    outputs = self.style_net(images)
+                    correct_style += outputs.argmax(dim=1).eq(style).sum().item()
 
-        print(f'Color: {correct_color / ((step + 1) * 1) * 100:.4f}%, Style: {correct_style / ((step + 1) * 1) * 100:.4f}%, '
-              f'Part: {correct_part / ((step + 1) * 1) * 100:.4f}%, Season Category: {correct_season / ((step + 1) * 1) * 100:.4f}%')
+                    outputs = self.part_net(images)
+                    correct_part += outputs.argmax(dim=1).eq(part).sum().item()
+
+                    outputs = self.season_net(images)
+                    correct_season += outputs.argmax(dim=1).eq(season).sum().item()
+
+                    outputs = self.category_net(images)
+                    correct_category += outputs.argmax(dim=1).eq(category).sum().item()
+
+                print(f'Epoch: {epoch}, Color: {correct_color / len(self.test_loader) / self.batch_size * 100:.4f}%, Style: {correct_style / len(self.test_loader) / self.batch_size * 100:.4f}%, '
+                      f'Part: {correct_part / len(self.test_loader) / self.batch_size * 100:.4f}%, Season: {correct_season / len(self.test_loader) / self.batch_size * 100:.4f}% '
+                      f'Category: {correct_category / len(self.test_loader) / self.batch_size * 100:.4f}%')
+
+                update_vis_plot(epoch, correct_color / len(self.test_loader) / self.batch_size * 100, color_plot, 'append')
+                update_vis_plot(epoch, correct_style / len(self.test_loader) / self.batch_size * 100, style_plot, 'append')
+                update_vis_plot(epoch, correct_part / len(self.test_loader) / self.batch_size * 100, part_plot, 'append')
+                update_vis_plot(epoch, correct_season / len(self.test_loader) / self.batch_size * 100, season_plot, 'append')
+                update_vis_plot(epoch, correct_category / len(self.test_loader) / self.batch_size * 100, category_plot, 'append')
 
     def build_model(self):
             self.color_net: nn.Module = Model(self.backbone, self.num_color).to(self.device)
@@ -96,10 +115,3 @@ class Tester:
         epoch.sort()
 
         self.epoch = epoch[-1]
-        self.color_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"color_checkpoint-{self.epoch}.pth"), map_location=self.device))
-        self.season_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"season_checkpoint-{self.epoch}.pth"), map_location=self.device))
-        self.part_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"part_checkpoint-{self.epoch}.pth"), map_location=self.device))
-        self.style_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"style_checkpoint-{self.epoch}.pth"), map_location=self.device))
-        self.category_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"category_checkpoint-{self.epoch}.pth"), map_location=self.device))
-
-        print("[*] Load Model from %s: " % str(self.checkpoint_dir), epoch[-1])
