@@ -123,11 +123,11 @@ class Trainer:
     def load_model(self):
         print("[*] Load checkpoint in ", str(self.checkpoint_dir))
 
-        if not os.listdir(self.checkpoint_dir):
+        model_parameter = glob(os.path.join(self.checkpoint_dir, f"{self.backbone}_checkpoint-{self.epoch}-*.pth"))
+
+        if not model_parameter:
             print("[!] No checkpoint in ", str(self.checkpoint_dir))
             return
-
-        model_parameter = glob(os.path.join(self.checkpoint_dir, f"{self.backbone}_checkpoint-{self.epoch}-*.pth"))
 
         epoch = []
         for s in model_parameter:

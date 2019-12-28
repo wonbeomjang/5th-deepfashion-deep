@@ -81,11 +81,10 @@ class Tester:
     def load_model(self):
         print("[*] Load checkpoint in ", str(self.checkpoint_dir))
 
-        if not os.listdir(self.checkpoint_dir):
-            print("[!] No checkpoint in ", str(self.checkpoint_dir))
-            return
-
         model_parameter = glob(os.path.join(self.checkpoint_dir, f"{self.backbone}_checkpoint-{self.epoch}-*.pth"))
+
+        if not model_parameter:
+            raise Exception("[!] No checkpoint in ", str(self.checkpoint_dir))
 
         epoch = []
         for s in model_parameter:
