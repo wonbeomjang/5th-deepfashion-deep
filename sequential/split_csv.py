@@ -36,6 +36,8 @@ def main():
         line = input_file.readline()
         if not line:
             break
+        if line.startswith("image_file_name,color,style,part,season,category"):
+            continue
 
         image_name, color, style, part, season, category = line.split(',')
         category = category[:-1]

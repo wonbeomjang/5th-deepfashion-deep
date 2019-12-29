@@ -79,7 +79,7 @@ class Trainer:
                 season_loss = criterion(season_prediction, season)
                 category_loss = criterion(category_prediction, category)
 
-                loss = color_loss + style_loss + part_loss + season_loss + category_loss
+                loss = color_loss + 2*style_loss + part_loss + season_loss + category_loss
 
                 optimizer.zero_grad()
                 loss.backward()
@@ -104,7 +104,7 @@ class Trainer:
                     print(f'Color: {correct_color/((step+1)*self.batch_size)*100:.4f}%, Style: {correct_style/((step+1)*self.batch_size)*100:.4f}%, '
                           f'Part: {correct_part/((step+1)*self.batch_size)*100:.4f}%, Season Category: {correct_season/((step+1)*self.batch_size)*100:.4f}%')
 
-            torch.save(self.net.state_dict(), f'{self.checkpoint_dir}/f"{self.backbone}_checkpoint-{epoch}.pth')
+            torch.save(self.net.state_dict(), f'{self.checkpoint_dir}/{self.backbone}_checkpoint-{epoch}.pth')
 
             scheduler.step()
 

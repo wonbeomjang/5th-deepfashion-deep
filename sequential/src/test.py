@@ -44,11 +44,11 @@ class Tester:
                 correct_season = 0
                 correct_category = 0
 
-                self.color_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"color_checkpoint-{epoch}.pth"), map_location=self.device))
-                self.season_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"season_checkpoint-{epoch}.pth"), map_location=self.device))
-                self.part_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"part_checkpoint-{epoch}.pth"), map_location=self.device))
-                self.style_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"style_checkpoint-{epoch}.pth"), map_location=self.device))
-                self.category_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"category_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.color_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"{self.backbone}_color_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.season_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"{self.backbone}_season_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.part_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"{self.backbone}_part_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.style_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"{self.backbone}_style_checkpoint-{epoch}.pth"), map_location=self.device))
+                self.category_net.load_state_dict(torch.load(os.path.join(self.checkpoint_dir, f"{self.backbone}_category_checkpoint-{epoch}.pth"), map_location=self.device))
 
                 for step, (images, color, style, part, season, category) in enumerate(self.test_loader):
                     images = images.to(self.device)
@@ -101,11 +101,10 @@ class Tester:
     def load_model(self):
         print("[*] Load checkpoint in ", str(self.checkpoint_dir))
 
-        if not os.listdir(self.checkpoint_dir):
-            print("[!] No checkpoint in ", str(self.checkpoint_dir))
-            return
+        model_parameter = glob(os.path.join(self.checkpoint_dir, f"{self.backbone}_color_checkpoint-*.pth"))
 
-        model_parameter = glob(os.path.join(self.checkpoint_dir, "color_checkpoint-*.pth"))
+        if not model_parameter:
+            raise Exception("[!] No checkpoint in ", str(os.path.join(self.checkpoint_dir, f"{self.backbone}_color_checkpoint-*.pth")))
 
         epoch = []
         for s in model_parameter:

@@ -577,3 +577,4 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/vim,linux,xcode,macos,pycharm,windows,visualstudio,visualstudiocode
 
 sequential/checkpoints
+combine/checkpoints
